@@ -1,20 +1,12 @@
-import { Schema, model } from 'mongoose';
+// Import Joi
+import Joi from 'joi';
 
-const eventSchema = new Schema(
-  {
-    userId: { type: Schema.Types.ObjectId, ref: 'users', required: true },
-    name: { type: String, required: true, maxLength: 100 },
-    date: { type: Date, required: true },
-    time: { type: String, required: true, match: /^\d{2}:\d{2}$/ },
-    category: {
-      type: String,
-      required: true,
-      enum: ['meeting', 'birthday', 'workshop', 'conference', 'webinar', 'party']
-    },
-    description: { type: String, required: true, maxLength: 1000 },
-  },
-  { timestamps: true, versionKey: false }
-);
-
-export const EventsCollection = model('events', eventSchema);
-export { eventSchema };
+// Define the Joi event validation schema
+export const eventJoiSchema = Joi.object({
+  userId: Joi.string().required(),
+  name: Joi.string().max(100).required(),
+  date: Joi.date().required(),
+  time: Joi.string().regex(/^\d{2}:\d{2}$/).required(),
+  category: Joi.string().valid('meeting', 'birthday', 'workshop', 'conference', 'webinar', 'party').required(),
+  description: Joi.string().max(1000).required(),
+});

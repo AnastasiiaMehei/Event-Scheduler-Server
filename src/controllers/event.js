@@ -1,35 +1,12 @@
 import { addEvent, updateEvent, deleteEvent, getEvent, getAllEvents } from '../services/event.js';
 import createHttpError from 'http-errors';
-import { eventSchema } from '../db/models/event.js';
-export async function addEventController(req, res, next) {
-  const { error } = eventSchema.validate(req.body);
-  if (error) {
-    return next(createHttpError(400, error.details[0].message));
-  }
-
-  const data = {
-    name: req.body.name,
-    date: req.body.date,
-    time: req.body.time,
-    category: req.body.category,
-    description: req.body.description,
-    userId: req.user._id,
-  };
-
-  await addEvent(data);
-
-  res.status(200).send({
-    status: 200,
-    message: 'Event added successfully',
-    data,
-  });
-}
-
+import { eventJoiSchema } from '../validation/event.js';
+export async function addEventController(req, res, next) { const { error } = eventJoiSchema.validate(req.body); if (error) { return next(createHttpError(400, error.details[0].message)); } const data = { name: req.body.name, date: req.body.date, time: req.body.time, category: req.body.category, description: req.body.description, userId: req.user._id, }; await addEvent(data); res.status(200).send({ status: 200, message: 'Event added successfully', data, }); }
 export async function updateEventController(req, res, next) {
   const eventId = req.params.eventId;
   const userId = req.user._id;
 
-  const { error } = eventSchema.validate(req.body);
+  const { error } = eventJoiSchema.validate(req.body); // Use Joi schema for validation
   if (error) {
     return next(createHttpError(400, error.details[0].message));
   }

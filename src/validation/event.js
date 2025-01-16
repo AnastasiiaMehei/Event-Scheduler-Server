@@ -1,9 +1,11 @@
 import Joi from 'joi';
 
-export const eventSchema = Joi.object({
-  name: Joi.string().min(1).max(25).required(),
-  date: Joi.date().iso().required(),
-  time: Joi.string().pattern(/^\d{2}:\d{2}$/).required(),
+// Define the Joi validation schema
+export const eventJoiSchema = Joi.object({
+  userId: Joi.string().required(),
+  name: Joi.string().max(100).required(),
+  date: Joi.date().required(),
+  time: Joi.string().regex(/^\d{2}:\d{2}$/).required(),
   category: Joi.string().valid('meeting', 'birthday', 'workshop', 'conference', 'webinar', 'party').required(),
-  description: Joi.string().max(50).required(),
+  description: Joi.string().max(1000).required(),
 });
