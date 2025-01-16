@@ -1,5 +1,6 @@
-import { addEvent, updateEvent, deleteEvent, getEvent, getAllEvents } from '../services/events.js';
-import createHttpError from 'http-errors';import { eventSchema } from '../validation.js'; 
+import { addEvent, updateEvent, deleteEvent, getEvent, getAllEvents } from '../services/event.js';
+import createHttpError from 'http-errors';
+import { eventSchema } from '../db/models/event.js';
 export async function addEventController(req, res, next) {
   const { error } = eventSchema.validate(req.body);
   if (error) {

@@ -17,3 +17,4 @@ const eventSchema = new Schema(
 );
 
 export const EventsCollection = model('events', eventSchema);
+export { eventSchema };

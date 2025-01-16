@@ -1,13 +1,5 @@
-import { UsersCollection } from '../db/models/user.js';
-import { EventsCollection } from '../db/models/events.js'; // Шлях до вашої моделі подій
+import { EventsCollection } from '../db/models/event.js'; // Шлях до вашої моделі подій
 
-export async function userDailyNorm(dailyNorma, userId) {
-  return await UsersCollection.findByIdAndUpdate(
-    userId,
-    { dailyNorma },
-    { new: true }
-  );
-}
 
 export async function addEvent(data) {
   return await EventsCollection.create(data);
