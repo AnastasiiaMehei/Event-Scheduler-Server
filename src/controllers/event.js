@@ -1,12 +1,36 @@
 import { addEvent, updateEvent, deleteEvent, getEvent, getAllEvents } from '../services/event.js';
 import createHttpError from 'http-errors';
-import { eventJoiSchema } from '../validation/event.js';
-export async function addEventController(req, res, next) { const { error } = eventJoiSchema.validate(req.body); if (error) { return next(createHttpError(400, error.details[0].message)); } const data = { name: req.body.name, date: req.body.date, time: req.body.time, category: req.body.category, description: req.body.description, userId: req.user._id, }; await addEvent(data); res.status(200).send({ status: 200, message: 'Event added successfully', data, }); }
+import { EventsCollection } from '../db/models/event.js'; // Ensure correct import
+import { v4 as uuidv4 } from 'uuid'; // Import uuid generator
+
+export async function addEventController(req, res, next) {
+  const { error } = EventsCollection.validate(req.body);
+  if (error) {
+    return next(createHttpError(400, error.details[0].message));
+  }
+
+  const data = {
+    eventId: uuidv4(), // Generate unique eventId
+    name: req.body.name,
+    date: req.body.date,
+    time: req.body.time,
+    category: req.body.category,
+    description: req.body.description,
+  };
+
+  const newEvent = await addEvent(data);
+
+  res.status(200).send({
+    status: 200,
+    message: 'Event added successfully',
+    data: newEvent,
+  });
+}
+
 export async function updateEventController(req, res, next) {
   const eventId = req.params.eventId;
-  const userId = req.user._id;
 
-  const { error } = eventJoiSchema.validate(req.body); // Use Joi schema for validation
+  const { error } = EventsCollection.validate(req.body);
   if (error) {
     return next(createHttpError(400, error.details[0].message));
   }
@@ -19,9 +43,9 @@ export async function updateEventController(req, res, next) {
     description: req.body.description,
   };
 
-  const updatedEvent = await updateEvent(eventId, data, userId);
+  const updatedEvent = await updateEvent(eventId, data);
 
-  if (!updatedEvent || updatedEvent.userId.toString() !== userId.toString()) {
+  if (!updatedEvent) {
     return next(createHttpError(404, 'Not found'));
   }
 
@@ -34,11 +58,10 @@ export async function updateEventController(req, res, next) {
 
 export async function deleteEventController(req, res, next) {
   const eventId = req.params.eventId;
-  const userId = req.user._id;
 
-  const deletedEvent = await deleteEvent(eventId, userId);
+  const deletedEvent = await deleteEvent(eventId);
 
-  if (!deletedEvent || deletedEvent.userId.toString() !== userId.toString()) {
+  if (!deletedEvent) {
     return next(createHttpError(404, 'Not found'));
   }
 
@@ -47,11 +70,10 @@ export async function deleteEventController(req, res, next) {
 
 export async function getEventController(req, res, next) {
   const eventId = req.params.eventId;
-  const userId = req.user._id;
 
-  const event = await getEvent(eventId, userId);
+  const event = await getEvent(eventId);
 
-  if (!event || event.userId.toString() !== userId.toString()) {
+  if (!event) {
     return next(createHttpError(404, 'Not found'));
   }
 
@@ -63,9 +85,7 @@ export async function getEventController(req, res, next) {
 }
 
 export async function getAllEventsController(req, res, next) {
-  const userId = req.user._id;
-
-  const events = await getAllEvents(userId);
+  const events = await getAllEvents();
 
   res.status(200).json({
     status: 200,

@@ -1,13 +1,12 @@
-import { EventsCollection } from '../db/models/event.js'; // Шлях до вашої моделі подій
-
+import {EventsCollection}  from '../db/models/event.js';
 
 export async function addEvent(data) {
   return await EventsCollection.create(data);
 }
 
-export function updateEvent(eventId, data, userId) {
-  return EventsCollection.findOneAndUpdate(
-    { _id: eventId, userId },
+export async function updateEvent(eventId, data) {
+  return await EventsCollection.findOneAndUpdate(
+    { _id: eventId },
     data,
     {
       new: true,
@@ -15,14 +14,14 @@ export function updateEvent(eventId, data, userId) {
   );
 }
 
-export function deleteEvent(eventId, userId) {
-  return EventsCollection.findOneAndDelete({ _id: eventId, userId });
+export async function deleteEvent(eventId) {
+  return await EventsCollection.findOneAndDelete({ _id: eventId });
 }
 
-export async function getEvent(eventId, userId) {
-  return await EventsCollection.findOne({ _id: eventId, userId });
+export async function getEvent(eventId) {
+  return await EventsCollection.findOne({ _id: eventId });
 }
 
-export async function getAllEvents(userId) {
-  return EventsCollection.find({ userId });
+export async function getAllEvents() {
+  return await EventsCollection.find({});
 }
