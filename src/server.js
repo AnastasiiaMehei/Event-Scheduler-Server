@@ -24,6 +24,11 @@ const whitelist = [
   export function setupServer() {
     const app = express();
   app.use(cors(corsOptions));
+  app.get('/', (req, res) => {
+    res.json({
+      message: 'Hello dear user!',
+    });
+  });
   app.use('/uploads', express.static(UPLOAD_DIR));
   app.use(cookieParser());
   // app.use((req, res, next) => {
